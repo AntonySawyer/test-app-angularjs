@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="tests">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Let it test!</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
+	<script src="./app.js"></script>
+	<link rel="stylesheet" href="./style.css">
+</head>
+
+<body ng-controller="TestsList as tests">
+	<button ng-click="TestsList.runAll()">Run</button>
+	<table>
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Status</th>
+				<th>Result</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="test in tests.list">
+				<td>{{test.title}}</td>
+				<td>placeholder</td>
+				<td>placeholder</td>
+			</tr>
+		</tbody>
+	</table>
+</body>
+
+</html>
