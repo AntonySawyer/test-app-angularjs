@@ -12,7 +12,7 @@
 </head>
 
 <body ng-controller="TestsList as tests">
-	<button ng-click="TestsList.runAll()">Run</button>
+	<button ng-click="tests.runAll()">Run</button>
 	<table>
 		<thead>
 			<tr>
@@ -22,10 +22,10 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr ng-repeat="test in tests.list">
-				<td>{{test.title}}</td>
-				<td>placeholder</td>
-				<td>placeholder</td>
+			<tr ng-repeat="test in tests.list" class="test-{{test.result}}">
+				<td>{{ test.title }}</td>
+				<td>{{ test.inProgress ? 'in progress...' : test.result }}</td>
+				<td>{{ test.inProgress ? '' : test.reason }}</td>
 			</tr>
 		</tbody>
 	</table>

@@ -11,10 +11,6 @@ table th {
   padding: 8px;
 }
 
-table tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
 table tr:hover {
   background-color: #ddd;
 }
@@ -40,4 +36,14 @@ button {
 
 button:hover {
   cursor: pointer;
+}
+
+.test-false {
+  color: #ff0000;
+  background-color: #ce9696;
+}
+
+.test-true {
+  color: #4CAF50;
+  background-color: #abe0ad;
 }
