@@ -17,17 +17,14 @@
 		<thead>
 			<tr>
 				<th>Name</th>
-				<th>Status</th>
 				<th>Result</th>
+				<th>Reason</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr ng-repeat="test in tests.list" class="test-{{test.result}}">
 				<td>{{ test.title }}</td>
-				<!-- <td>{{ test.inProgress ? 'in progress...' : test.result }}</td>
-				<td>{{ test.inProgress ? '' : test.reason }}</td> -->
-				<td>{{ test.inProgress }}</td>
-				<td>{{ test.result }}</td>
+				<td>{{ test.result | progressFilter }}</td>
 				<td>{{ test.reason }}</td>
 			</tr>
 		</tbody>

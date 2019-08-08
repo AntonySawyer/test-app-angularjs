@@ -1,103 +1,75 @@
 angular
   .module('tests', [])
-  .controller('TestsList', mainCtrl);
+  .controller('TestsList', mainCtrl)
+  .filter('progressFilter', progressFilter);
 
-function mainCtrl() {
-  this.list = [
-    {
+function mainCtrl($scope, $http) {
+  this.list = [{
       title: 'Test #1',
-      inProgress: '',
       result: '',
       reason: '',
-      rqParam: {
-        url: 'http://postman-echo.com/status/200',
+      function: () => this.getResult(0, {
+        url: 'https://postman-echo.com/status/200',
         method: 'GET'
-      }
+      })
     },
     {
       title: 'Test #2',
-      inProgress: '',
       result: '',
       reason: '',
-      rqParam: {
-        url: 'https://postman-echo.com/status/200',
+      function: () => this.getResult(1, {
+        url: 'https://postman-echo.com/status/20',
         method: 'GET'
-      }
+      })
     },
     {
       title: 'Test #3',
-      inProgress: '',
       result: '',
       reason: '',
-      rqParam: {
+      function: () => this.getResult(2, {
         url: 'https://postman-echo.com/status/200',
-        method: 'GET'
-      }
-    },
-    {
-      title: 'Test #4',
-      inProgress: '',
-      result: '',
-      reason: '',
-      rqParam: {
-        url: 'https://postman-echo.com/status/200',
-        method: 'GET'
-      }
-    },
-    {
-      title: 'Test #5',
-      inProgress: '',
-      result: '',
-      reason: '',
-      rqParam: {
-        url: 'https://postman-echo.com/status/200',
-        method: 'GET'
-      }
-    },
-    {
-      title: 'Test #6',
-      inProgress: '',
-      result: '',
-      reason: '',
-      rqParam: {
-        url: 'https://postman-echo.com/status/20',
-        method: 'GET'
-      }
-    }];
+        method: 'GETd'
+      })
+    }
+  ];
+
+  this.getResult = (id, rqParams) => {
+    fetch(rqParams.url, {
+        method: rqParams.method
+      })
+      .then(rs => {
+        if (rs.status === 200) {
+          this.list[id].result = true;
+        } else {
+        this.list[id].result = false;
+        this.list[id].reason = `Status ${rs.status}: ${rs.statusText}`;
+        }
+        $scope.$apply(); //TODO: fix it
+      })
+      .catch(err => {
+        this.list[id].result = false;
+        this.list[id].reason = err;
+        $scope.$apply(); //TODO: fix it
+      });
+  }
 
   this.runAll = () => {
-    this.list.map(test => test.inProgress = true);
-    this.list.forEach((test, index) => this.checkRQ(test.rqParam, index));
-    this.changeResult(5,[]);
+    this.list.map(test => test.result = 'run');
+    this.list.forEach(test => test.function());
   };
+}
 
-  this.checkStatus = (status) => {
-    console.log('in status with ' + status);
-    return status === 200 ? false : `Status - ${status}`;
-  }
-
-  this.changeResult = (id, errors) => {
-    console.log('in change');
-    console.log(errors);
-    this.list[id].inProgress = false;
-    this.list[id].result = errors.length === 0;
-    if (errors.length !== 0) {
-      this.list[id].reason = errors.join('\n');
+function progressFilter() {
+  return state => {
+    switch (state) {
+      case true:
+        return 'Test successfull completed.'
+      case false:
+        return 'Something is wrong.'
+      case 'run':
+        return 'Waiting for results...'
+      default:
+        return 'Not running.'
     }
-    console.log(this.list[id]);
-  }
-
-  this.checkRQ = (param, id) => {
-    const errors = [];
-    fetch(param.url, {
-      method: param.method
-    })
-      .then(rs => errors.push(this.checkStatus(rs.status)))
-      .then(() => this.changeResult(id, errors.filter(isError => isError)))
-      .catch(err => {
-        errors.push(err);
-        this.changeResult(id, errors.filter(isError => isError)
-      );
-    });
   }
 }
