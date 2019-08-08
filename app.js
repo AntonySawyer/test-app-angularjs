@@ -3,50 +3,58 @@ angular
   .controller('TestsList', mainCtrl)
   .filter('progressFilter', progressFilter);
 
-function mainCtrl($scope, $http) {
+function mainCtrl($scope) {
   this.list = [{
-      title: 'Test #1',
       result: '',
       reason: '',
-      function: () => this.getResult(0, {
+      unit: {
+        title: 'Test',
+        id: 0,
         url: 'https://postman-echo.com/status/200',
-        method: 'GET'
-      })
+        method: 'GET',
+        criteria: [1]
+      }
     },
     {
-      title: 'Test #2',
       result: '',
       reason: '',
-      function: () => this.getResult(1, {
-        url: 'https://postman-echo.com/status/20',
-        method: 'GET'
-      })
+      unit: {
+        title: 'Test',
+        id: 1,
+        url: 'https://postman-echo.com/status/200',
+        method: 'FAIL',
+        criteria: [1]
+      }
     },
     {
-      title: 'Test #3',
       result: '',
       reason: '',
-      function: () => this.getResult(2, {
-        url: 'https://postman-echo.com/status/200',
-        method: 'GETd'
-      })
+      unit: {
+        title: 'Test',
+        id: 2,
+        url: 'https://postman-echo.com/status/400',
+        method: 'GET',
+        criteria: [1]
+      }
     }
   ];
 
-  this.getResult = (id, rqParams) => {
-    fetch(rqParams.url, {
-        method: rqParams.method
-      })
+  this.getResult = (unit) => {
+    const { id, url, method, criteria } = unit;
+    fetch(url, { method })
       .then(rs => {
-        if (rs.status === 200) {
+        console.log(rs);
+        const errors = checkList(criteria, rs);
+        if (errors.length === 0) {
           this.list[id].result = true;
         } else {
-        this.list[id].result = false;
-        this.list[id].reason = `Status ${rs.status}: ${rs.statusText}`;
+          this.list[id].result = false;
+          this.list[id].reason = errors.join('; ');
         }
         $scope.$apply(); //TODO: fix it
       })
       .catch(err => {
+        console.log(err)
         this.list[id].result = false;
         this.list[id].reason = err;
         $scope.$apply(); //TODO: fix it
@@ -55,7 +63,7 @@ function mainCtrl($scope, $http) {
 
   this.runAll = () => {
     this.list.map(test => test.result = 'run');
-    this.list.forEach(test => test.function());
+    this.list.forEach(test => this.getResult(test.unit));
   };
 }
 
@@ -71,5 +79,22 @@ function progressFilter() {
       default:
         return 'Not running.'
     }
+  }
+}
+
+function checkList(params, rs) {
+  const check = {
+    1: (rs) => checkStatus(rs)
+  }
+  const results = [];
+  params.forEach(id => results.push(check[id](rs)));
+  return results.filter(i => !!i); // i: null || "str: error"
+}
+
+function checkStatus(rs) {
+  if (rs.status === 200) {
+    return null;
+  } else {
+    return `Status ${rs.status}: ${rs.statusText}`;
   }
 }
