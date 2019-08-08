@@ -12,7 +12,7 @@ function mainCtrl($scope) {
         id: 0,
         url: 'https://postman-echo.com/status/200',
         method: 'GET',
-        criteria: [1]
+        criteria: [1, 2]
       }
     },
     {
@@ -23,7 +23,7 @@ function mainCtrl($scope) {
         id: 1,
         url: 'https://postman-echo.com/status/200',
         method: 'FAIL',
-        criteria: [1]
+        criteria: [1, 2]
       }
     },
     {
@@ -34,7 +34,7 @@ function mainCtrl($scope) {
         id: 2,
         url: 'https://postman-echo.com/status/400',
         method: 'GET',
-        criteria: [1]
+        criteria: [1, 2]
       }
     }
   ];
@@ -49,7 +49,7 @@ function mainCtrl($scope) {
           this.list[id].result = true;
         } else {
           this.list[id].result = false;
-          this.list[id].reason = errors.join('; ');
+          this.list[id].reason = errors.join('\n');
         }
         $scope.$apply(); //TODO: fix it
       })
@@ -82,12 +82,13 @@ function progressFilter() {
   }
 }
 
-function checkList(params, rs) {
-  const check = {
-    1: (rs) => checkStatus(rs)
-  }
+function checkList(criteria, rs) {
+  const funcToCheck = {
+    1: checkStatus,
+    2: validJSON
+  };
   const results = [];
-  params.forEach(id => results.push(check[id](rs)));
+  criteria.forEach(id => results.push(funcToCheck[id](rs)));
   return results.filter(i => !!i); // i: null || "str: error"
 }
 
@@ -97,4 +98,16 @@ function checkStatus(rs) {
   } else {
     return `Status ${rs.status}: ${rs.statusText}`;
   }
+}
+
+function validJSON(rs) { //doesn't work correct yet
+  return null; 
+  // try {
+  //   const json = JSON.parse(rs);
+  //   return typeof json === Object ? null : 'Invalid JSON';
+  // }
+  // catch (e) {
+  //   console.log(e)
+  //   return e;
+  // }
 }
