@@ -46,18 +46,49 @@ function mainCtrl($scope) {
         method: 'GET',
         criteria: [1, 2]
       }
+    }, {
+      result: '',
+      reason: '',
+      unit: {
+        title: 'Set params',
+        id: 4,
+        url: 'https://postman-echo.com/get?foo1=bar1&foo2=bar2',
+        method: 'GET',
+        criteria: [1]
+      }
+    }, {
+      result: '',
+      reason: '',
+      unit: {
+        title: 'Post string',
+        id: 5,
+        url: 'https://postman-echo.com/post',
+        method: 'POST',
+        body: 'This is test string for POST.',
+        criteria: [1, 2, 3]
+      }
+    }, {
+      result: '',
+      reason: '',
+      unit: {
+        title: 'Put sring',
+        id: 6,
+        url: 'https://postman-echo.com/put',
+        method: 'PUT',
+        body: 'This is test string for PUT.',
+        criteria: [1, 2, 3]
+      }
     }
   ];
 
   this.getResult = (unit) => {
-    const { id, url, method, criteria } = unit;
-    fetch(url, {
-          method
-          })
+    const { id, url, method, body, criteria } = unit;
+    fetch(`http://cors-anywhere.herokuapp.com/${url}`, { method, body }) //TODO: fix it
       .then(rs => {
-        const errors = checkList(criteria, rs);
+        const errors = checkList(criteria, rs, body);
         if (errors.length === 0) {
           this.list[id].result = true;
+          this.list[id].reason = `${criteria.length} from ${criteria.length} passed.`
         } else {
           this.list[id].result = false;
           this.list[id].reason = `${errors.length} from ${criteria.length} failed: \n ${errors.join('\n')}`;
@@ -92,33 +123,36 @@ function progressFilter() {
   }
 }
 
-function checkList(criteria, rs) {
+function checkList(criteria, rs, rqBody) {
   const funcToCheck = {
     1: checkStatus,
-    2: validJSON
+    2: validJSON,
+    3: compareBody
   };
   const results = [];
-  criteria.forEach(id => results.push(funcToCheck[id](rs)));
+  criteria.forEach(id => results.push(funcToCheck[id](rs, rqBody)));
   return results.filter(i => !!i); // i: null || "str: error"
 }
 
 function checkStatus(rs) {
-  if (rs.status === 200) {
-    return null;
-  } else {
-    return `Status ${rs.status}: ${rs.statusText}`;
-  }
+  return rs.status === 200 ? null : `Status ${rs.status}: ${rs.statusText}`;
 }
 
-function validJSON(rs) { //doesn't work correct yet
-console.log(rs);
+function validJSON(rs) {
   try {
-    const json = rs.json();
-    console.log(typeof json);
-    console.log(json);
-    return typeof json === Object ? null : 'Invalid JSON';
+    rs.json()
+    .then(data => {
+      console.log(data);
+      return null;
+    })
+    .catch(err => { return err })
   }
   catch (e) {
     return e;
   }
+}
+
+function compareBody(rs, rqBody) {
+  rs.json()
+  .then(data => {return rqBody === data ? null : `Got ${data} across ${rqBody}`})
 }
