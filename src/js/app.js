@@ -56,7 +56,7 @@ function mainCtrl($scope) {
         id: 4,
         url: '/get?foo1=bar1&foo2=bar2',
         method: 'GET',
-        criteria: [1, 2]
+        criteria: [1, 2, 5]
       }
     }, {
       result: '',
@@ -119,7 +119,7 @@ function mainCtrl($scope) {
 
   this.getResult = (unit) => {
     const { id, url, method, headers, body, criteria } = unit;
-    const toCheck = {request: {method, headers, body}, response: {status: '', statusText: '', body: {}}};
+    const toCheck = {request: {url, method, headers, body}, response: {status: '', statusText: '', body: {}}};
     let errors = [];
     fetch(`http://cors-anywhere.herokuapp.com/${endpoint}${url}`, 
             { method, headers, body }) //TODO: fix cors url
@@ -176,7 +176,8 @@ function checkList(criteria, toCheck) {
     1: checkStatus,
     2: validJSON,
     3: compareBody,
-    4: compareForm
+    4: compareForm,
+    5: checkArgs
   };
   const results = [];
   criteria.forEach(id => results.push(funcToCheck[id](toCheck)));
@@ -205,4 +206,30 @@ function compareForm(toCheck) {
   const rsForm = toUrlEncoded(toCheck.response.body.form);
   const rqForm = toCheck.request.body;
   return rqForm === rsForm ? null : `Got ${rsForm} across ${rqForm}`;
+}
+
+function checkArgs(toCheck) {
+  const rsArgs = toCheck.response.body.args;
+  const rqArgs = new URL(`${endpoint}${toCheck.request.url}`);
+  const rsArgsKeys = Object.keys(rsArgs);
+  const rqArgsKeys = [];
+  for (let key of rqArgs.searchParams.keys()) {
+    rqArgsKeys.push(key);
+  }
+  if (rsArgsKeys.length === rqArgsKeys.length) {
+    const keyDiff = rsArgsKeys.filter(i => !rqArgsKeys.includes(i));
+    if (keyDiff.length === 0) {
+      const valDiff = [];
+      rsArgsKeys.map(i => {
+        if (rqArgs.searchParams.get(i) !== rsArgs[i]) {
+          valDiff.push(rsArgs[i]);
+        }
+      });
+      return valDiff.length === 0 ? null : `Unexpected values: ${valDiff.join(', ')}`;
+    } else {
+      return `Unknown arguments: ${keyDiff.join(', ')}`;
+    }
+  } else {
+    return `Request has ${rqArgsKeys.length} arguments, but response have ${rsArgsKeys.length}`;
+  }
 }
