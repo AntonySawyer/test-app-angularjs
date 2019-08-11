@@ -1,0 +1,115 @@
+{
+  "0": {
+    "title": "Success",
+    "id": 0,
+    "url": "/status/200",
+    "method": "GET",
+    "criteria": [
+      1,
+      2
+    ]
+  },
+  "1": {
+    "title": "Wrong method",
+    "id": 1,
+    "url": "/status/200",
+    "method": "FAIL",
+    "criteria": [
+      1
+    ]
+  },
+  "2": {
+    "title": "Bad request",
+    "id": 2,
+    "url": "/status/400",
+    "method": "GET",
+    "criteria": [
+      1,
+      2
+    ]
+  },
+  "3": {
+    "title": "Get ip",
+    "id": 3,
+    "url": "/ip",
+    "method": "GET",
+    "criteria": [
+      1,
+      2
+    ]
+  },
+  "4": {
+    "title": "Set params",
+    "id": 4,
+    "url": "/get?foo1=bar1&foo2=bar2",
+    "method": "GET",
+    "criteria": [
+      1,
+      2,
+      5
+    ]
+  },
+  "5": {
+    "title": "Post string",
+    "id": 5,
+    "url": "/post",
+    "method": "POST",
+    "body": "This is test string for POST.",
+    "criteria": [
+      1,
+      2,
+      3
+    ]
+  },
+  "6": {
+    "title": "Put string",
+    "id": 6,
+    "url": "/put",
+    "method": "PUT",
+    "body": "This is test string for PUT.",
+    "criteria": [
+      1,
+      2,
+      3
+    ]
+  },
+  "7": {
+    "title": "Delete method",
+    "id": 7,
+    "url": "/delete",
+    "method": "DELETE",
+    "body": "This is test string for DELETE.",
+    "criteria": [
+      1,
+      2,
+      3
+    ]
+  },
+  "8": {
+    "title": "Path method",
+    "id": 8,
+    "url": "/patch",
+    "method": "PATCH",
+    "body": "This is test string for PATCH.",
+    "criteria": [
+      1,
+      2,
+      3
+    ]
+  },
+  "9": {
+    "title": "Post form-urlencoded",
+    "id": 9,
+    "url": "/post",
+    "method": "POST",
+    "headers": {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    "body": "key1=val1&key2=val2",
+    "criteria": [
+      1,
+      2,
+      4
+    ]
+  }
+}

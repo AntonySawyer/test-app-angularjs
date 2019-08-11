@@ -23,7 +23,7 @@
 		</thead>
 		<tbody>
 			<tr ng-repeat="test in tests.list" class="test-{{test.result}}">
-				<td>{{ test.unit.title + '. Test №' + test.unit.id }}</td>
+				<td>{{ test.title + '. Test №' + test.id }}</td>
 				<td>{{ test.result | progressFilter }}</td>
 				<td>{{ test.reason }}</td>
 			</tr>

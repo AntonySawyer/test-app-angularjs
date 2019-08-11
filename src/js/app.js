@@ -6,116 +6,13 @@ angular
 const endpoint = 'https://postman-echo.com';
 
 function mainCtrl($scope) {
-  this.list = [{
-      result: '',
-      reason: '',
-      unit: {
-        title: 'Success',
-        id: 0,
-        url: '/status/200',
-        method: 'GET',
-        criteria: [1,2]
-      }
-    },
-    {
-      result: '',
-      reason: '',
-      unit: {
-        title: 'Wrong method',
-        id: 1,
-        url: '/status/200',
-        method: 'FAIL',
-        criteria: [1]
-      }
-    },
-    {
-      result: '',
-      reason: '',
-      unit: {
-        title: 'Bad request',
-        id: 2,
-        url: '/status/400',
-        method: 'GET',
-        criteria: [1, 2]
-      }
-    }, {
-      result: '',
-      reason: '',
-      unit: {
-        title: 'Get ip',
-        id: 3,
-        url: '/ip',
-        method: 'GET',
-        criteria: [1, 2]
-      }
-    }, {
-      result: '',
-      reason: '',
-      unit: {
-        title: 'Set params',
-        id: 4,
-        url: '/get?foo1=bar1&foo2=bar2',
-        method: 'GET',
-        criteria: [1, 2, 5]
-      }
-    }, {
-      result: '',
-      reason: '',
-      unit: {
-        title: 'Post string',
-        id: 5,
-        url: '/post',
-        method: 'POST',
-        body: 'This is test string for POST.',
-        criteria: [1, 2, 3]
-      }
-    }, {
-      result: '',
-      reason: '',
-      unit: {
-        title: 'Put sring',
-        id: 6,
-        url: '/put',
-        method: 'PUT',
-        body: 'This is test string for PUT.',
-        criteria: [1, 2, 3]
-      }
-    }, {
-      result: '',
-      reason: '',
-      unit: {
-        title: 'Delete method',
-        id: 7,
-        url: '/delete',
-        method: 'DELETE',
-        body: 'This is test string for DELETE.',
-        criteria: [1, 2, 3]
-      }
-    }, {
-      result: '',
-      reason: '',
-      unit: {
-        title: 'Path method',
-        id: 8,
-        url: '/patch',
-        method: 'PATCH',
-        body: 'This is test string for PATCH.',
-        criteria: [1, 2, 3]
-      }
-    }, {
-      result: '',
-      reason: '',
-      unit: {
-        title: 'Post form-urlencoded',
-        id: 9,
-        url: '/post',
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: toUrlEncoded({"key1": "val1", "key2": "val2"}),
-        criteria: [1, 2, 4]
-      }
+  this.list = [];
+  fetch('/unitList').then(rs => rs.json()).then(data => {
+    for (const id in data) {
+      this.list.push(data[id]);
     }
-  ];
+    $scope.$apply();
+  });
 
   this.getResult = (unit) => {
     const { id, url, method, headers, body, criteria } = unit;
@@ -149,8 +46,10 @@ function mainCtrl($scope) {
   }
 
   this.runAll = () => {
-    this.list.map(test => test.result = 'run');
-    this.list.forEach(test => this.getResult(test.unit));
+    this.list.map(test => {
+      test.result = 'run';
+    });
+    this.list.forEach(test => this.getResult(test));
   };
 }
 
