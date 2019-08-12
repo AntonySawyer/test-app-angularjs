@@ -111,5 +111,19 @@
       2,
       4
     ]
+  },
+  "10": {
+    "title": "Get RQ headers",
+    "id": 10,
+    "url": "/headers",
+    "method": "GET",
+    "headers": {
+      "test-header": "This is test header in RQ."
+    },
+    "criteria": [
+      1,
+      2,
+      6
+    ]
   }
 }

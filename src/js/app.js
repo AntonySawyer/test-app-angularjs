@@ -46,9 +46,7 @@ function mainCtrl($scope) {
   }
 
   this.runAll = () => {
-    this.list.map(test => {
-      test.result = 'run';
-    });
+    this.list.map(test => test.result = 'run');
     this.list.forEach(test => this.getResult(test));
   };
 }
@@ -76,7 +74,8 @@ function checkList(criteria, toCheck) {
     2: validJSON,
     3: compareBody,
     4: compareForm,
-    5: checkArgs
+    5: checkArgs,
+    6: checkHeaders
   };
   const results = [];
   criteria.forEach(id => results.push(funcToCheck[id](toCheck)));
@@ -131,4 +130,11 @@ function checkArgs(toCheck) {
   } else {
     return `Request has ${rqArgsKeys.length} arguments, but response have ${rsArgsKeys.length}`;
   }
+}
+
+function checkHeaders(toCheck) {
+  const missHeaders = Object.keys(toCheck.request.headers).filter(i => {
+    toCheck.request.headers[i] != toCheck.response.body.headers[i];
+  });
+  return missHeaders.length === 0 ? null : `Some headers are missing: \n ${missHeaders.join('\n')}`;
 }
